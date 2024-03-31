@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.example.transport_programm.databinding.ActivityMainBinding
 import com.example.transport_programm.databinding.ItemCharacterLineBinding
 
 typealias OnDeletePressedListener = (Character) -> Unit
@@ -18,20 +17,42 @@ class CharacterAdapter(
         return characters.size
     }
 
-    override fun getItem(p0: Int): Any {
-        return characters[p0]
+    override fun getItem(position: Int): Character {
+        return characters[position]
     }
 
-    override fun getItemId(p0: Int): Long {
-        return characters[p0].id
+    override fun getItemId(position: Int): Long {
+        return characters[position].id
     }
 
-    override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
-        TODO("Not yet implemented")
+    private fun getDefaultView(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup?,
+        isDropdownView: Boolean
+    ): View {
+        val binding =
+            convertView?.tag as ItemCharacterLineBinding? ?: createBinding(parent!!.context)
+        val character = getItem(position)
+
+        binding.titleTextView.text = character.name
+        binding.deleteImageView.tag = character
+        binding.deleteImageView.visibility = if (isDropdownView) View.VISIBLE else View.GONE
+
+        return binding.root
     }
 
-    override fun onClick(p0: View?) {
-        TODO("Not yet implemented")
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        return getDefaultView(position, convertView, parent, isDropdownView = false)
+    }
+
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        return getDefaultView(position, convertView, parent, isDropdownView = true)
+    }
+
+    override fun onClick(view: View?) {
+        val character = view!!.tag as Character
+        onDeletePressedListener.invoke(character)
     }
 
     private fun createBinding(context: Context): ItemCharacterLineBinding {
@@ -40,6 +61,4 @@ class CharacterAdapter(
         binding.root.tag = binding
         return binding
     }
-
-
 }

@@ -28,18 +28,21 @@
         android:orientation="horizontal">
 
         <RadioButton
+            android:id="@+id/AutoRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="auto"
             />
 
         <RadioButton
+            android:id="@+id/MotoRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="moto" />
     </RadioGroup>
 
     <TextView
+        android:id="@+id/InfoTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"

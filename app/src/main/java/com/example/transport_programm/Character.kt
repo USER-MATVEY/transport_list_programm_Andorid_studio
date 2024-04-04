@@ -2,6 +2,9 @@ package com.example.transport_programm
 
 class Character (
     val id: Long,
-    val name: String,
-    val isCustom: Boolean
+    var name: String,
+    val isCustom: Boolean,
+    val type: String,
+    var axesCount: Int,
+    var liftingCapacity: Int
 )

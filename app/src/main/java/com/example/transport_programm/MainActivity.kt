@@ -17,12 +17,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: CharacterAdapter
 
     private val  data = mutableListOf(
-        Character(id= Random.nextLong(), name= "Henry", isCustom= false),
-        Character(id= Random.nextLong(), name= "Josh", isCustom= false),
-        Character(id= Random.nextLong(), name= "Liza", isCustom= false),
-        Character(id= Random.nextLong(), name= "Ann", isCustom= false),
-        Character(id= Random.nextLong(), name= "Ivan", isCustom= false),
-        Character(id= Random.nextLong(), name= "Arthur", isCustom= false)
+        Character(id= Random.nextLong(), name= "Harly", isCustom= false, type= "auto", axesCount= 2, liftingCapacity = 1000),
+        Character(id= Random.nextLong(), name= "Lada", isCustom= false, type= "auto", axesCount= 3, liftingCapacity = 4000),
+        Character(id= Random.nextLong(), name= "Kamaz", isCustom= false, type= "auto", axesCount= 4, liftingCapacity = 10000),
+        Character(id= Random.nextLong(), name= "Yamal", isCustom= false, type= "moto", axesCount= 2, liftingCapacity = 500),
+        Character(id= Random.nextLong(), name= "Suzuki", isCustom= false, type= "moto", axesCount= 3, liftingCapacity = 250),
+        Character(id= Random.nextLong(), name= "pitbyke", isCustom= false, type= "auto", axesCount= 2, liftingCapacity = 100)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         adapter = CharacterAdapter(data) {
             deleteCharacter(it)
         }
-        binding.spinnerList.adapter = adapter //TODO to complete
+        binding.spinnerList.adapter = adapter
 
         binding.spinnerList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(
@@ -46,11 +46,16 @@ class MainActivity : AppCompatActivity() {
                 view: View?,
                 position: Int,
                 id: Long) {
-                TODO("Not yet implemented")
+                val character = data[position]
+                binding.InfoTextView.text =
+                    getString(R.string.character_info,
+                        character.liftingCapacity, character.axesCount)
+                if (character.type == "auto") { binding.AutoRadio.isChecked = true }
+                else if (character.type == "moto") { binding.MotoRadio.isChecked = true }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
+                binding.InfoTextView.text = ""
             }
         }
     }
@@ -62,32 +67,41 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogBinding.root)
             .setPositiveButton("Add") { d, wich ->
                 val name = dialogBinding.characterNameEditText.text.toString()
-                if (name.isNotBlank()){
-                    createCharacter(name)
-                }
+                val type =
+                    if (dialogBinding.AddAutoButton.isChecked){
+                        "auto"
+                    }
+                    else {
+                        "moto"
+                    }
+
+                val lift = dialogBinding.LiftingCapacityEdiText.text.toString()
+                val axes = dialogBinding.AxesCountEditText.text.toString()
+
+                createCharacter(name, type, lift, axes)
+
             }
             .create()
         dialog.show()
     }
 
-    private fun createCharacter(name: String) {
+    private fun createCharacter(name: String, type: String, lift: String, axes: String) {
         val character = Character(
             id = Random.nextLong(),
-            name = name,
-            isCustom = true
+            name = "Some",
+            isCustom = true,
+            type = type,
+            liftingCapacity = 0,
+            axesCount = 2
         )
+
+        if (name.isNotBlank()) character.name = name
+        if (lift.isNotBlank()) character.liftingCapacity = lift.toInt()
+        if (axes.isNotBlank()) character.axesCount = axes.toInt()
+
         data.add(character)
         adapter.notifyDataSetChanged()
     }
-
-//    private fun showCharacterInfo(character: Character) {
-//        val dialog = android.app.AlertDialog.Builder(this)
-//            .setTitle(character.name)
-//            .setMessage(getString(R.string.character_info, character.name, character.id))
-//            .setPositiveButton("OK") {_, _ -> }
-//            .create()
-//        dialog.show()
-//    }
 
     private fun deleteCharacter(character: Character) {
         val listener = DialogInterface.OnClickListener { dialog, whitch ->
@@ -98,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         }
         val dialog = android.app.AlertDialog.Builder(this)
             .setTitle("Delete Character")
-            .setMessage("Are you sure you eant to  delete the character ${character}?")
+            .setMessage("Are you sure you eant to  delete the character ${character.name}?")
             .setPositiveButton("Delete", listener)
             .setNegativeButton("Cancel", listener)
             .create()

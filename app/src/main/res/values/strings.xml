@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">transport_programm</string>
-    <string name="character_info">Name: %s\nid: %d</string>
+    <string name="character_info">lifting capacity: %d\naxes count: %d</string>
 </resources>

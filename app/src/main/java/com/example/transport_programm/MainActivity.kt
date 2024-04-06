@@ -1,12 +1,15 @@
 package com.example.transport_programm
 
 import android.content.DialogInterface
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Adapter
 import android.widget.AdapterView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.toColor
+import androidx.core.graphics.toColorInt
 import com.example.transport_programm.databinding.ActivityMainBinding
 import com.example.transport_programm.databinding.DialogAddCharacterBinding
 import kotlin.random.Random
@@ -15,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: CharacterAdapter
+    private lateinit var state: ActivityState
 
     private val  data = mutableListOf(
         Character(id= Random.nextLong(), name= "Harly", isCustom= false, type= "auto", axesCount= 2, liftingCapacity = 1000),
@@ -32,6 +36,20 @@ class MainActivity : AppCompatActivity() {
 
         setupList()
         binding.addButton.setOnClickListener { onAddPressed() }
+        binding.infoButton.setOnClickListener { SetRandomColors() }
+
+        state = savedInstanceState?.getParcelable("activity_state")?: ActivityState(
+            selectedItem = 0,
+            current_color = 0
+        )
+        binding.spinnerList.setSelection(state.selectedItem)
+        binding.InfoTextView.setBackgroundColor(state.current_color)
+        binding.ExtraInfoTextView.setBackgroundColor(state.current_color)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable("activity_state", state)
     }
 
     private fun setupList() {
@@ -50,12 +68,16 @@ class MainActivity : AppCompatActivity() {
                 binding.InfoTextView.text =
                     getString(R.string.character_info,
                         character.liftingCapacity, character.axesCount)
+                binding.ExtraInfoTextView.text = ""
+
                 if (character.type == "auto") { binding.AutoRadio.isChecked = true }
                 else if (character.type == "moto") { binding.MotoRadio.isChecked = true }
+                state.selectedItem = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 binding.InfoTextView.text = ""
+                binding.ExtraInfoTextView.text = ""
             }
         }
     }
@@ -84,6 +106,23 @@ class MainActivity : AppCompatActivity() {
             .create()
         dialog.show()
     }
+
+    private fun SetRandomColors() {
+        val rndColor = Color.rgb(
+            kotlin.random.Random.nextInt(256),
+            kotlin.random.Random.nextInt(256),
+            kotlin.random.Random.nextInt(256)
+        )
+        binding.InfoTextView.setBackgroundColor(rndColor)
+        binding.ExtraInfoTextView.setBackgroundColor(rndColor)
+        state.current_color = rndColor
+
+        binding.ExtraInfoTextView.text =
+            getString(R.string.extra_info,
+                binding.spinnerList.selectedItemPosition,
+                binding.spinnerList.count)
+    }
+
 
     private fun createCharacter(name: String, type: String, lift: String, axes: String) {
         val character = Character(

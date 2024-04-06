@@ -1,18 +1,21 @@
 package com.example.transport_programm
 
 import android.content.Context
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.example.transport_programm.databinding.ItemCharacterLineBinding
+import kotlinx.parcelize.Parcelize
 
 typealias OnDeletePressedListener = (Character) -> Unit
 
+@Parcelize
 class CharacterAdapter(
     private val characters: List<Character>,
     private val onDeletePressedListener: OnDeletePressedListener
-): BaseAdapter(), View.OnClickListener {
+): BaseAdapter(), Parcelable, View.OnClickListener {
     override fun getCount(): Int {
         return characters.size
     }
